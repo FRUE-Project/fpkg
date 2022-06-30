@@ -28,6 +28,6 @@ To install FPKG;
 
 # Support 
 
-As always, support and contributions to development can be found in my Discord server: https://discord.gg/qRysc6bVRv
+As always, support and contributions to development can be found in our Discord server: https://discord.gg/qRysc6bVRv
 
 ![fpkg](https://user-images.githubusercontent.com/88291291/175923213-10a67f08-e6e2-4de2-ad69-13e516f10a2a.png)
