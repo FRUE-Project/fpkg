@@ -15,7 +15,6 @@ Currently, FPKG is being developed, but usage would most likely be like this:
 
 - Linux (Ubuntu/Debian , Fedora/RHEL , Gentoo , Arch , etc.)
 - macOS (Mac OS X 10.5+)
-- Windows (using WSL)
 - BSD (FreeBSD , OpenBSD , NetBSD)
 
 # Installation
