@@ -24,6 +24,7 @@ To install FPKG;
 - Clone repository
 - Run ```chmod +x /path/to/fpkg```
 - Move ```fpkg``` to /usr/bin/
+- Make FPKG home directory (/home/FPKG) [this is used for the -d option]
 
 # Support 
 
