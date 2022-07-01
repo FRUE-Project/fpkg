@@ -19,8 +19,6 @@ case "$response" in
 		;;
 	[i] )
 		read -rp "What package you wanna install? " pkgname
-		case "$pkgname" in
-			"tictacfrue" )
 				sleep 1
 				echo " :: Searchin' for package ..."
 				sleep 3
@@ -28,7 +26,7 @@ case "$response" in
 				sleep 0.5
 				echo " These packages gon be INSTALLED: "
 				echo "======PKG==============VERSION============REPO========"
-				echo "tic-tac-frue.fpkg       0.1-r1   Suppabreak/FRUE-Games"
+				echo "$pkgname       0.1-r1   Suppabreak/FRUE-Games"
 				echo "======================================================"
 				read -rp "Cop packages n' install? [y/n]: " reply
 				case "$reply" in
@@ -49,24 +47,20 @@ case "$response" in
 						chmod +x /usr/bin/tic-tac-frue
 						sleep 1
 						echo " :: Cleanin' up..."
-						rm -rf /tmp/FRUE-Games
 						echo " !! Done!!1 :)"
 						sleep 1
 						;;
 				esac
-		esac
 		;;
-	[r]) 
-		read -rp "What package you wanna get rid of? " pkg
-		case "$pkg" in
-			"tic-tac-frue")
+	[r] ) 
+		read -rp "What package you wanna get rid of? " pkgname
 				echo " :: Lookin' in /usr/bin ..."
 				sleep 1
 				echo " !! Packages finded!"
 				sleep 0.5
 				echo "These packages gon be DELETED:"
 				echo "======PKG=============VERSION============REPO========"
-				echo "tic-tac-frue.fpkg      0.1-r1          /usr/bin"
+				echo "$pkgname      0.1-r1          /usr/bin"
 				echo "====================================================="
 				read -rp "Are you sure you wanna get rid of these packages? [y/n]: " yesno
 				case "$yesno" in
@@ -79,11 +73,17 @@ case "$response" in
 						echo "!! Removing in 2..."
 						sleep 1
 						echo "!! Removing in 1..."
-						rm /usr/bin/tic-tac-frue
+						if [[ -d /usr/bin/"$pkgname" ]]; then
+							rm -rf /usr/bin/"$pkgname"
+						elif [[ -f /usr/bin/"$pkgname" ]]; then
+							rm /usr/bin/"$pkgname"
+						else
+							echo "How 'bout ya install that package first?"
+							exit 1
+						fi
 						echo "Packages removed!!1 :)"
 						sleep 1
 						;;
 				esac
 		esac
-esac
 exit
