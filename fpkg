@@ -75,7 +75,7 @@ case "$response" in
 						echo " !! Removing in 1..."
 						sleep 1
 						if [[ -d /usr/bin/"$pkgname" ]]; then
-							rm /usr/bin/"$pkgname"
+							rm -r /usr/bin/"$pkgname"
 						elif [[ -f /usr/bin/"$pkgname" ]]; then
 							rm /usr/bin/"$pkgname"
 						else
