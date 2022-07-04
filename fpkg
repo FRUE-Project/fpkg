@@ -7,6 +7,13 @@ fast="nae"
 repo="FRUE-Games"
 ver="0.1-r1"
 
+function exit_with_error()
+{
+	echo "FATAL: $1";
+	echo "Aborting.";
+	exit 1;
+}
+
 function sleepy() {
 	if [ "$fast" = "nae" ]; then
 		sleep "$1"
@@ -22,10 +29,12 @@ function Help() {
 	sleepy 1
 	echo " "
 	echo "Options:"
-	echo "-i - installs a package"
-	echo "-r - removes a package"
-	echo "-h - displays this help dialog"
+	echo "	-i - installs a package"
+	echo "	-r - removes a package"
+	echo "	-h - displays this help dialog and exits"
+	echo "	-f - sets 'fast mode' (waits are skipped)"
 	sleepy 1
+	exit 0
 }
 
 function Install() {
@@ -46,18 +55,18 @@ function Install() {
 	[yY])
 		echo " :: Downloadin' packages..."
 		if [[ -d /tmp/fpkg-cache ]]; then
-			cd /tmp/fpkg-cache
+			cd /tmp/fpkg-cache || exit_with_error "Could not cd to '/tmp/fpkg-cache/'"
 		else
-			mkdir /tmp/fpkg-cache
+			mkdir /tmp/fpkg-cache || exit_with_error "Could not create '/tmp/fpkg-cache/'"
 			chmod 777 -R /tmp/fpkg-cache
-			cd /tmp/fpkg-cache
+			cd /tmp/fpkg-cache || exit_with_error "Could not cd to '/tmp/fpkg-cache/'"
 		fi
-		wget https://raw.githubusercontent.com/FRUE-Project/${repo}/main/${package} >/dev/null 2>&1
+		wget "https://raw.githubusercontent.com/FRUE-Project/${repo}/main/${package}" >/dev/null 2>&1 || exit_with_error "Could not fetch package ${package}"
 		echo " :: Unpackin' executables..."
-		mv /tmp/fpkg-cache/${package} /usr/bin
+		mv "/tmp/fpkg-cache/${package}" /usr/bin || "Could not unpack executables. Sry."
 		sleepy 2
 		echo " :: Fixin' executables..."
-		chmod +x /usr/bin/${package}
+		chmod +x "/usr/bin/${package}"
 		sleepy 1
 		echo " :: Cleanin' up..."
 		echo " !! Done!!1 :)"
@@ -88,9 +97,9 @@ function Remove() {
 		echo " !! Removing in 1..."
 		sleepy 1
 		if [[ -d /usr/bin/"${package}" ]]; then
-			rm -r /usr/bin/"${package}"
+			rm -r /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
 		elif [[ -f /usr/bin/"${package}" ]]; then
-			rm /usr/bin/"${package}"
+			rm /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
 		else
 			echo " !! Error !! How 'bout yue install that package first?"
 			exit 1
@@ -105,19 +114,26 @@ function Remove() {
 #empty for now
 #}
 
+#MAIN
+
+if [[ -d /etc/fpkg/ ]]; then
+	mkdir /etc/fpkg/ || exit_with_error "Could not create '/etc/fpkg/'"
+fi
+
+
 while getopts ":hfi:r:" option; do
 	case $option in
 	f) fast="ye" ;; #apparently only works if passed before -h (like -f -h or -fh)
 	h) Help ;;
 	i)
-		install=true
 		package=${OPTARG}
-		Install ${package}
+		Install "${package}"
+		exit
 		;;
 	r)
-		remove=true
 		package=${OPTARG}
-		Remove ${package}
+		Remove "${package}"
+		exit
 		;;
 	\?) Help ;;
 	esac
