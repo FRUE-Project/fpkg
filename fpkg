@@ -112,19 +112,11 @@ while getopts ":hfi:r:" option; do
 	i)
 		install=true
 		package=${OPTARG}
-		if $install && $remove; then
-			echo "Yue can't install (-i) and remove (-r) at the same time, duh1!!1!1" 1>&2
-			exit 1
-		fi
 		Install ${package}
 		;;
 	r)
 		remove=true
 		package=${OPTARG}
-		if $install && $remove; then
-			echo "Yue can't install (-i) and remove (-r) at the same time, duh1!!1!1" 1>&2
-			exit 1
-		fi
 		Remove ${package}
 		;;
 	\?) Help ;;
