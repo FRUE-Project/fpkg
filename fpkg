@@ -1,106 +1,122 @@
 #!/bin/bash
 fast="nae"
-function sleepy ()
-{
-	if [ "$fast" = "ye" ]; then
-		sleep "$1";
+
+############################
+## DUMMY VALUES / NO LOGIC #
+############################
+repo="FRUE-Games"
+ver="0.1-r1"
+
+function sleepy() {
+	if [ "$fast" = "nae" ]; then
+		sleep "$1"
 	fi
 }
 
+function Help() {
+	echo "FRUE Package Kit Getter"
+	echo "============================="
+	sleepy 0.5
+	echo "Version 0.1-r1"
+	echo "============================="
+	sleepy 1
+	echo " "
+	echo "Options:"
+	echo "-i - installs a package"
+	echo "-r - removes a package"
+	echo "-h - displays this help dialog"
+	sleepy 1
+}
 
-echo "FPKG v0.1-r1"
-if [ "$1" = "fast" ]; then
-	fast="ye"
-fi
-sleepy 1
-echo " "
-read -rp "Select a option' [i/r/h]: " response
-case "$response" in
-	[h] )
-		echo "FRUE Package Kit Getter"
-		sleepy 0.5
-		echo "Version 0.1-r1"
+function Install() {
+	echo " :: Searchin' for package ..."
+	sleepy 3
+	echo " !! Package finded!"
+	sleepy 0.5
+	echo " These packages gon be INSTALLED: "
+	echo "======PKG==============VERSION============REPO========"
+	echo "$package.fpkg          $ver   $repo"
+	echo "======================================================"
+	read -rp "Cop packages n' install? [y/n]: " reply
+	case "$reply" in
+	[nN])
+		echo " !! Didn't do jack shit..."
+		;;
+
+	[yY])
+		echo " :: Downloadin' packages..."
+		if [[ -d /tmp/fpkg-cache ]]; then
+			cd /tmp/fpkg-cache
+		else
+			mkdir /tmp/fpkg-cache
+			chmod 777 -R /tmp/fpkg-cache
+			cd /tmp/fpkg-cache
+		fi
+		wget https://raw.githubusercontent.com/FRUE-Project/${repo}/main/${package} >/dev/null 2>&1
+		echo " :: Unpackin' executables..."
+		mv /tmp/fpkg-cache/${package} /usr/bin
+		sleepy 2
+		echo " :: Fixin' executables..."
+		chmod +x /usr/bin/${package}
 		sleepy 1
-		echo " "
-		echo "Options: [i/r/h]"
-		echo " "
-		echo "i - installs a package"
-		echo "r - removes a package"
-		echo "h - displays this help dialog"
+		echo " :: Cleanin' up..."
+		echo " !! Done!!1 :)"
 		sleepy 1
 		;;
-	[i] )
-		read -rp "What package you wanna install? " pkgname
-				sleepy 1
-				echo " :: Searchin' for package ..."
-				sleepy 3
-				echo " !! Package finded!"
-				sleepy 0.5
-				echo " These packages gon be INSTALLED: "
-				echo "======PKG==============VERSION============REPO========"
-				echo "$pkgname.fpkg          0.1-r1   Suppabreak/FRUE-Games"
-				echo "======================================================"
-				read -rp "Cop packages n' install? [y/n]: " reply
-				case "$reply" in
-					[nN])
-						echo " !! Didn't do jack shit..."
-						;;
+	esac
+}
 
-					[yY])
-						echo " :: Downloadin' packages..."
-						if [[ -d /tmp/fpkg-cache ]]; then
-							rm -r /usr/bin/"$pkgname"
-						else
-							mkdir /tmp/fpkg-cache
-							chmod 777 -R /tmp/fpkg-cache
-						fi
-						cd /tmp/fpkg-cache
-						wget https://raw.githubusercontent.com/FRUE-Project/FRUE-Games/main/tic-tac-frue > /dev/null 2>&1
-						echo " :: Unpackin' executables..."
-						mv /tmp/fpkg-cache/tic-tac-frue /usr/bin
-						sleepy 2
-						echo " :: Fixin' executables..."
-						chmod +x /usr/bin/tic-tac-frue
-						sleepy 1
-						echo " :: Cleanin' up..."
-						echo " !! Done!!1 :)"
-						sleepy 1
-						;;
-				esac
+function Remove() {
+	echo " :: Lookin' in /usr/bin ..."
+	sleepy 1
+	echo " !! Packages finded!"
+	sleepy 0.5
+	echo "These packages gon be DELETED:"
+	echo "======PKG=============VERSION============REPO========"
+	echo "${package}           $ver          /usr/bin"
+	echo "====================================================="
+	read -rp "Are you sure you wanna get rid of these packages? [y/n]: " yesno
+	case "$yesno" in
+	[nN])
+		echo " !! Didn't do jack shit..."
 		;;
-	[r] ) 
-		read -rp "What package you wanna get rid of? " pkgname
-				echo " :: Lookin' in /usr/bin ..."
-				sleepy 1
-				echo " !! Packages finded!"
-				sleepy 0.5
-				echo "These packages gon be DELETED:"
-				echo "======PKG=============VERSION============REPO========"
-				echo "$pkgname           0.1-r1          /usr/bin"
-				echo "====================================================="
-				read -rp "Are you sure you wanna get rid of these packages? [y/n]: " yesno
-				case "$yesno" in
-					[nN])
-						echo " !! Didn't do jack shit..."
-						;;
-					[yY])
-						echo " !! Removing in 3..."
-						sleepy 1
-						echo " !! Removing in 2..."
-						sleepy 1
-						echo " !! Removing in 1..."
-						sleepy 1
-						if [[ -d /usr/bin/"$pkgname" ]]; then
-							rm -r /usr/bin/"$pkgname"
-						elif [[ -f /usr/bin/"$pkgname" ]]; then
-							rm /usr/bin/"$pkgname"
-						else
-							echo " !! Error !! How 'bout yue install that package first?"
-							exit 1
-						fi
-						echo "Packages removed!!1 :)"
-						sleepy 1
-						;;
-				esac
-		esac
-exit
+	[yY])
+		echo " !! Removing in 3..."
+		sleepy 1
+		echo " !! Removing in 2..."
+		sleepy 1
+		echo " !! Removing in 1..."
+		sleepy 1
+		if [[ -d /usr/bin/"${package}" ]]; then
+			rm -r /usr/bin/"${package}"
+		elif [[ -f /usr/bin/"${package}" ]]; then
+			rm /usr/bin/"${package}"
+		else
+			echo " !! Error !! How 'bout yue install that package first?"
+			exit 1
+		fi
+		echo "Packages removed!!1 :)"
+		sleepy 1
+		;;
+	esac
+}
+
+#function Purge {
+#empty for now
+#}
+
+while getopts ":hfi:r:" option; do
+	case $option in
+	f) fast="ye" ;; #apparently only works if passed before -h (like -f -h or -fh)
+	h) Help ;;
+	i)
+		package=${OPTARG}
+		Install ${package}
+		;;
+	r)
+		package=${OPTARG}
+		Remove ${package}
+		;;
+	\?) Help ;;
+	esac
+done
