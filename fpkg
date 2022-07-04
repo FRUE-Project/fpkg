@@ -6,6 +6,7 @@ fast="nae"
 ############################
 repo="FRUE-Games"
 ver="0.1-r1"
+fpkg_ver="0.1-r1"
 
 #Takes error message as first parameter; used as: command || exit_with_error <MSG>
 function exit_with_error() {
@@ -24,7 +25,7 @@ function Help() {
 	echo "FRUE Package Kit Getter"
 	echo "============================="
 	sleepy 0.5
-	echo "Version 0.1-r1"
+	echo "Version $fpkg_ver"
 	echo "============================="
 	sleepy 1
 	echo " "
@@ -33,6 +34,8 @@ function Help() {
 	echo "	-r - removes a package"
 	echo "	-h - displays this help dialog and exits"
 	echo "	-f - sets 'fast mode' (waits are skipped)"
+	echo "	-v - display version"
+	echo "	-d - only download the package and save it in /var/fpkg"
 	sleepy 1
 	exit 0
 }
@@ -67,11 +70,23 @@ function Install() {
 				cd /tmp/fpkg-cache || exit_with_error "Could not cd to '/tmp/fpkg-cache/'"
 			fi
 			wget "https://raw.githubusercontent.com/FRUE-Project/${repo}/main/${package}" >/dev/null 2>&1 || exit_with_error "Could not fetch package ${package}"
-			echo " :: Unpackin' executables..."
-			mv "/tmp/fpkg-cache/${package}" /usr/bin || "Could not unpack executables. Sry."
-			sleepy 2
-			echo " :: Fixin' executables..."
-			chmod +x "/usr/bin/${package}"
+			if [ "$downloadonly" = true ]; then
+				if [[ -d /var/fpkg ]]; then
+					cd /var/fpkg || exit_with_error "Could not cd to '/var/fpkg/'"
+				else
+					mkdir /var/fpkg || exit_with_error "Could not create '/var/fpkg/'"
+					chmod 777 -R /var/fpkg
+					cd /var/fpkg || exit_with_error "Could not cd to '/var/fpkg/'"
+				fi
+				mv "/tmp/fpkg-cache/${package}" /var/fpkg || "Could not place executables in /var/fpkg. Sry."
+				chmod +x "/var/fpkg/${package}"
+			else
+				echo " :: Unpackin' executables..."
+				mv "/tmp/fpkg-cache/${package}" /usr/bin || "Could not unpack executables. Sry."
+				sleepy 2
+				echo " :: Fixin' executables..."
+				chmod +x "/usr/bin/${package}"
+			fi
 			sleepy 1
 			echo " :: Cleanin' up..."
 			echo " !! Done!!1 :)"
@@ -122,6 +137,12 @@ function Remove() {
 	fi
 }
 
+function Version() {
+	echo "$fpkg_ver"
+	echo "© 2022, FRUE Project"
+	exit 0
+}
+
 #function Purge {
 #empty for now
 #}
@@ -132,7 +153,7 @@ if [[ -d /etc/fpkg/ ]]; then
 	mkdir /etc/fpkg/ || exit_with_error "Could not create '/etc/fpkg/'"
 fi
 
-while getopts ":hfi:r:" option; do
+while getopts ":hfi:r:vd" option; do
 	case $option in
 	f) fast="ye" ;; #apparently only works if passed before -h (like -f -h or -fh)
 	h) Help ;;
@@ -148,6 +169,8 @@ while getopts ":hfi:r:" option; do
 		Remove "${package}"
 		exit
 		;;
+	v) Version ;;
+	d) downloadonly=true ;;
 	\?) Help ;;
 	esac
 done
