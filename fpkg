@@ -8,11 +8,10 @@ repo="FRUE-Games"
 ver="0.1-r1"
 
 #Takes error message as first parameter; used as: command || exit_with_error <MSG>
-function exit_with_error()
-{
-	echo "FATAL: $1";
-	echo "Aborting.";
-	exit 1;
+function exit_with_error() {
+	echo "FATAL: $1"
+	echo "Aborting."
+	exit 1
 }
 
 function sleepy() {
@@ -39,76 +38,88 @@ function Help() {
 }
 
 function Install() {
-	echo " :: Searchin' for package ..."
-	sleepy 3
-	echo " !! Package finded!"
-	sleepy 0.5
-	echo " These packages gon be INSTALLED: "
-	echo "======PKG==============VERSION============REPO========"
-	echo "$package.fpkg          $ver   $repo"
-	echo "======================================================"
-	read -rp "Cop packages n' install? [y/n]: " reply
-	case "$reply" in
-	[nN])
-		echo " !! Didn't do jack shit..."
-		;;
+	if [ "$remove" = true ]; then
+		echo ""
+		echo "Already removed sumthing, not gonna install dat"
+		exit 0
+	else
+		echo " :: Searchin' for package ..."
+		sleepy 3
+		echo " !! Package finded!"
+		sleepy 0.5
+		echo " These packages gon be INSTALLED: "
+		echo "======PKG==============VERSION============REPO========"
+		echo "$package.fpkg          $ver   $repo"
+		echo "======================================================"
+		read -rp "Cop packages n' install? [y/n]: " reply
+		case "$reply" in
+		[nN])
+			echo " !! Didn't do jack shit..."
+			;;
 
-	[yY])
-		echo " :: Downloadin' packages..."
-		if [[ -d /tmp/fpkg-cache ]]; then
-			cd /tmp/fpkg-cache || exit_with_error "Could not cd to '/tmp/fpkg-cache/'"
-		else
-			mkdir /tmp/fpkg-cache || exit_with_error "Could not create '/tmp/fpkg-cache/'"
-			chmod 777 -R /tmp/fpkg-cache
-			cd /tmp/fpkg-cache || exit_with_error "Could not cd to '/tmp/fpkg-cache/'"
-		fi
-		wget "https://raw.githubusercontent.com/FRUE-Project/${repo}/main/${package}" >/dev/null 2>&1 || exit_with_error "Could not fetch package ${package}"
-		echo " :: Unpackin' executables..."
-		mv "/tmp/fpkg-cache/${package}" /usr/bin || "Could not unpack executables. Sry."
-		sleepy 2
-		echo " :: Fixin' executables..."
-		chmod +x "/usr/bin/${package}"
-		sleepy 1
-		echo " :: Cleanin' up..."
-		echo " !! Done!!1 :)"
-		sleepy 1
-		;;
-	esac
+		[yY])
+			echo " :: Downloadin' packages..."
+			if [[ -d /tmp/fpkg-cache ]]; then
+				cd /tmp/fpkg-cache || exit_with_error "Could not cd to '/tmp/fpkg-cache/'"
+			else
+				mkdir /tmp/fpkg-cache || exit_with_error "Could not create '/tmp/fpkg-cache/'"
+				chmod 777 -R /tmp/fpkg-cache
+				cd /tmp/fpkg-cache || exit_with_error "Could not cd to '/tmp/fpkg-cache/'"
+			fi
+			wget "https://raw.githubusercontent.com/FRUE-Project/${repo}/main/${package}" >/dev/null 2>&1 || exit_with_error "Could not fetch package ${package}"
+			echo " :: Unpackin' executables..."
+			mv "/tmp/fpkg-cache/${package}" /usr/bin || "Could not unpack executables. Sry."
+			sleepy 2
+			echo " :: Fixin' executables..."
+			chmod +x "/usr/bin/${package}"
+			sleepy 1
+			echo " :: Cleanin' up..."
+			echo " !! Done!!1 :)"
+			sleepy 1
+			;;
+		esac
+	fi
 }
 
 function Remove() {
-	echo " :: Lookin' in /usr/bin ..."
-	sleepy 1
-	echo " !! Packages finded!"
-	sleepy 0.5
-	echo "These packages gon be DELETED:"
-	echo "======PKG=============VERSION============REPO========"
-	echo "${package}           $ver          /usr/bin"
-	echo "====================================================="
-	read -rp "Are you sure you wanna get rid of these packages? [y/n]: " yesno
-	case "$yesno" in
-	[nN])
-		echo " !! Didn't do jack shit..."
-		;;
-	[yY])
-		echo " !! Removing in 3..."
+	if [ "$install" = true ]; then
+		echo ""
+		echo "Already installed sumthing, not gonna remove dat"
+		exit 0
+	else
+		echo " :: Lookin' in /usr/bin ..."
 		sleepy 1
-		echo " !! Removing in 2..."
-		sleepy 1
-		echo " !! Removing in 1..."
-		sleepy 1
-		if [[ -d /usr/bin/"${package}" ]]; then
-			rm -r /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
-		elif [[ -f /usr/bin/"${package}" ]]; then
-			rm /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
-		else
-			echo " !! Error !! How 'bout yue install that package first?"
-			exit 1
-		fi
-		echo "Packages removed!!1 :)"
-		sleepy 1
-		;;
-	esac
+		echo " !! Packages finded!"
+		sleepy 0.5
+		echo "These packages gon be DELETED:"
+		echo "======PKG=============VERSION============REPO========"
+		echo "${package}           $ver          /usr/bin"
+		echo "====================================================="
+		read -rp "Are you sure you wanna get rid of these packages? [y/n]: " yesno
+		case "$yesno" in
+		[nN])
+			echo " !! Didn't do jack shit..."
+			;;
+		[yY])
+			echo " !! Removing in 3..."
+			sleepy 1
+			echo " !! Removing in 2..."
+			sleepy 1
+			echo " !! Removing in 1..."
+			sleepy 1
+			if [[ -d /usr/bin/"${package}" ]]; then
+				rm -r /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
+			elif [[ -f /usr/bin/"${package}" ]]; then
+				rm /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
+			else
+				echo " !! Error !! How 'bout yue install that package first?"
+				exit 1
+			fi
+			echo "Packages removed!!1 :)"
+			sleepy 1
+			;;
+		esac
+	fi
 }
 
 #function Purge {
@@ -121,17 +132,18 @@ if [[ -d /etc/fpkg/ ]]; then
 	mkdir /etc/fpkg/ || exit_with_error "Could not create '/etc/fpkg/'"
 fi
 
-
 while getopts ":hfi:r:" option; do
 	case $option in
 	f) fast="ye" ;; #apparently only works if passed before -h (like -f -h or -fh)
 	h) Help ;;
 	i)
+		install=true
 		package=${OPTARG}
 		Install "${package}"
 		exit
 		;;
 	r)
+		remove=true
 		package=${OPTARG}
 		Remove "${package}"
 		exit
