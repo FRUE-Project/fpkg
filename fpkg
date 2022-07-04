@@ -48,12 +48,16 @@ case "$response" in
 
 					[yY])
 						echo " :: Downloadin' packages..."
-						cd /tmp
-						git clone https://github.com/Suppabreak/FRUE-Games > /dev/null 2>&1
-						rm /tmp/FRUE-Games/LICENSE
-						rm /tmp/FRUE-Games/README.md
+						if [[ -d /tmp/fpkg-cache ]]; then
+							rm -r /usr/bin/"$pkgname"
+						else
+							mkdir /tmp/fpkg-cache
+							chmod 777 -R /tmp/fpkg-cache
+						fi
+						cd /tmp/fpkg-cache
+						wget https://raw.githubusercontent.com/FRUE-Project/FRUE-Games/main/tic-tac-frue > /dev/null 2>&1
 						echo " :: Unpackin' executables..."
-						mv /tmp/FRUE-Games/tic-tac-frue /usr/bin
+						mv /tmp/fpkg-cache/tic-tac-frue /usr/bin
 						sleepy 2
 						echo " :: Fixin' executables..."
 						chmod +x /usr/bin/tic-tac-frue
