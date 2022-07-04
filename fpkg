@@ -1,5 +1,6 @@
 #!/bin/bash
 fast="nae"
+package_print_format="%-25s%-12s%-40s\n" #printf format
 
 ############################
 ## DUMMY VALUES / NO LOGIC #
@@ -51,9 +52,9 @@ function Install() {
 		echo " !! Package finded!"
 		sleepy 0.5
 		echo " These packages gon be INSTALLED: "
-		echo "======PKG==============VERSION============REPO========"
-		echo "$package.fpkg          $ver   $repo"
-		echo "======================================================"
+		echo "======PKG=================VERSION=====================REPO================="
+		printf "$package_print_format" "$package.fpkg" "$ver" "$repo"
+		echo "==========================================================================="
 		read -rp "Cop packages n' install? [y/n]: " reply
 		case "$reply" in
 		[nN])
@@ -107,9 +108,9 @@ function Remove() {
 		echo " !! Packages finded!"
 		sleepy 0.5
 		echo "These packages gon be DELETED:"
-		echo "======PKG=============VERSION============REPO========"
-		echo "${package}           $ver          /usr/bin"
-		echo "====================================================="
+		echo "======PKG=================VERSION=====================REPO================="
+		printf "$package_print_format" "${package}" "$ver" "$repo"
+		echo "==========================================================================="
 		read -rp "Are you sure you wanna get rid of these packages? [y/n]: " yesno
 		case "$yesno" in
 		[nN])
@@ -148,6 +149,11 @@ function Version() {
 #}
 
 #MAIN
+
+#Check for root privileges
+if [ "$EUID" -ne 0 ]; then
+	exit_with_error "This script must be run as root."
+fi
 
 if [[ -d /etc/fpkg/ ]]; then
 	mkdir /etc/fpkg/ || exit_with_error "Could not create '/etc/fpkg/'"
