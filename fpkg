@@ -17,8 +17,7 @@ function exit_with_error() {
 	exit 1
 }
 
-function warn()
-{
+function warn() {
 	echo "WARNING: $1"
 }
 
@@ -62,14 +61,14 @@ function Install() {
 		# shellcheck disable=SC2059
 		printf "$package_print_format" "${package}" "$ver" "$repo"
 		echo "==========================================================================="
-		
+
 		#Check if we are installing this package automatically (i.e. it's a dependency) (used by passing "auto" as 2nd parameter to function)
 		if [ "$2" != "auto" ]; then
 			read -rp "Cop packages n' install? [y/n]: " reply
 		else
 			reply="y"
 		fi
-		
+
 		case "$reply" in
 		[nN])
 			echo " !! Didn't do jack shit..."
@@ -77,43 +76,43 @@ function Install() {
 
 		[yY])
 			echo " :: Downloadin' package $package..."
-			
+
 			if [[ ! -d /tmp/fpkg-cache ]]; then
 				mkdir /tmp/fpkg-cache || exit_with_error "Could not create '/tmp/fpkg-cache/'"
 				chmod 755 -R /tmp/fpkg-cache
 			fi
 			cd /tmp/fpkg-cache || exit_with_error "Could not cd to '/tmp/fpkg-cache/'"
 
-			
-			wget "${repoURL}${package}" >/dev/null 2>&1 || warn "Could not fetch package ${package}. Skipping."; return 2
-			
+			wget "${repoURL}${package}" >/dev/null 2>&1 || warn "Could not fetch package ${package}. Skipping."
+			return 2
+
 			if [ "$downloadonly" = true ]; then
 				echo " !! Package donwloaden'!!1 In '/tmp/fpkg-cache/'"
-				return 
+				return
 			fi
-			
+
 			echo " :: Unpackin' package..."
-			
-			mkdir /etc/fpkg/packages/"$package" || 
-			
-			#Handle .sh scripts and .fpkg files differently
-			case $(file --mime-type -b "${package}") in
-			*shellscript*)
-				mv "/tmp/fpkg-cache/${package}" /usr/bin || exit_with_error "Could not unpack executables. Sry."
-				sleepy 2
-				chmod +x "/usr/bin/${package}"
-				;;
-			application/gzip)
-				mkdir /tmp/fpkg-cache/"${package}-cache"
-				tar -xzvf /tmp/fpkg-cache/"${package}" -O /tmp/fpkg-cache/"${package}-cache" || exit_with_error "Could not unpack executables. Sry."
-				find . -print0 | while IFS= read -r -d'' f; do
-					file -ib "$f" | grep shellscr && mv "$f" /usr/bin
-					chmod +x "/usr/bin/$f"
-				done
-				;;
-			*) ;;
-			esac
-			
+
+			mkdir /etc/fpkg/packages/"$package" ||
+
+				#Handle .sh scripts and .fpkg files differently
+				case $(file --mime-type -b "${package}") in
+				*shellscript*)
+					mv "/tmp/fpkg-cache/${package}" /usr/bin || exit_with_error "Could not unpack executables. Sry."
+					sleepy 2
+					chmod +x "/usr/bin/${package}"
+					;;
+				application/gzip)
+					mkdir /tmp/fpkg-cache/"${package}-cache"
+					tar -xzvf /tmp/fpkg-cache/"${package}" -O /tmp/fpkg-cache/"${package}-cache" || exit_with_error "Could not unpack executables. Sry."
+					find . -print0 | while IFS= read -r -d'' f; do
+						file -ib "$f" | grep shellscr && mv "$f" /usr/bin
+						chmod +x "/usr/bin/$f"
+					done
+					;;
+				*) ;;
+				esac
+
 			echo " :: Fixin' executables..."
 			sleepy 1
 			echo " :: Cleanin' up..."
@@ -152,7 +151,7 @@ function Remove() {
 			echo " !! Removing in 1..."
 			sleepy 1
 			if [[ -d /usr/bin/"${package}" ]]; then
-				rm -r /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
+				rm -r /usr/bin/"${package:?}" || exit_with_error "Could. Not. Remove. Package."
 			elif [[ -f /usr/bin/"${package}" ]]; then
 				rm /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
 			else
@@ -192,8 +191,11 @@ chmod 755 /etc/fpkg/packages/ || exit_with_error "Could not chmod '/etc/fpkg/pac
 [[ -d /etc/fpkg/repositories/ ]] || mkdir /etc/fpkg/repositories/ || exit_with_error "Could not create '/etc/fpkg/repositories/'"
 chmod 755 /etc/fpkg/repositories/ || exit_with_error "Could not chmod '/etc/fpkg/repositories/'"
 
-optlist=':hfi:r:vd'
+optlist=':hfi:r:vd' #add new opts here
 
+####################
+# PRIORITY OPTIONS #
+####################
 while getopts "$optlist" option; do
 	case $option in
 	f) fast="ye" ;;
@@ -203,6 +205,9 @@ done
 
 OPTIND=1
 
+#####################
+# SECONDARY OPTIONS #
+#####################
 while getopts "$optlist" option; do
 	case $option in
 	h) Help ;;
