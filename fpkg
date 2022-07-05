@@ -36,7 +36,7 @@ function Help() {
 	echo "	-h - displays this help dialog and exits"
 	echo "	-f - sets 'fast mode' (waits are skipped)"
 	echo "	-v - display version"
-	echo "	-d - only download the package and save it in /var/fpkg"
+	echo "	-d - only download the package and save it in /etc/fpkg"
 	sleepy 1
 	exit 0
 }
@@ -72,15 +72,15 @@ function Install() {
 			fi
 			wget "https://raw.githubusercontent.com/FRUE-Project/${repo}/main/${package}" >/dev/null 2>&1 || exit_with_error "Could not fetch package ${package}"
 			if [ "$downloadonly" = true ]; then
-				if [[ -d /var/fpkg ]]; then
-					cd /var/fpkg || exit_with_error "Could not cd to '/var/fpkg/'"
+				if [[ -d /etc/fpkg ]]; then
+					cd /etc/fpkg || exit_with_error "Could not cd to '/etc/fpkg/'"
 				else
-					mkdir /var/fpkg || exit_with_error "Could not create '/var/fpkg/'"
-					chmod 777 -R /var/fpkg
-					cd /var/fpkg || exit_with_error "Could not cd to '/var/fpkg/'"
+					mkdir /etc/fpkg || exit_with_error "Could not create '/etc/fpkg/'"
+					chmod 777 -R /etc/fpkg
+					cd /etc/fpkg || exit_with_error "Could not cd to '/etc/fpkg/'"
 				fi
-				mv "/tmp/fpkg-cache/${package}" /var/fpkg || "Could not place executables in /var/fpkg. Sry."
-				chmod +x "/var/fpkg/${package}"
+				mv "/tmp/fpkg-cache/${package}" /etc/fpkg || "Could not place executables in /etc/fpkg. Sry."
+				chmod +x "/etc/fpkg/${package}"
 			else
 				echo " :: Unpackin' executables..."
 				mv "/tmp/fpkg-cache/${package}" /usr/bin || "Could not unpack executables. Sry."
@@ -155,9 +155,7 @@ if [ "$EUID" -ne 0 ]; then
 	exit_with_error "This script must be run as root."
 fi
 
-if [[ -d /etc/fpkg/ ]]; then
-	mkdir /etc/fpkg/ || exit_with_error "Could not create '/etc/fpkg/'"
-fi
+[[ -d /etc/fpkg/ ]] || mkdir /etc/fpkg/ || exit_with_error "Could not create '/etc/fpkg/'"
 
 while getopts ":hfi:r:vd" option; do
 	case $option in
