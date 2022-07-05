@@ -157,9 +157,22 @@ fi
 
 [[ -d /etc/fpkg/ ]] || mkdir /etc/fpkg/ || exit_with_error "Could not create '/etc/fpkg/'"
 
-while getopts ":hfi:r:vd" option; do
+optlist=':hfi:r:vd'
+
+while getopts "$optlist" option; do
 	case $option in
-	f) fast="ye" ;; #apparently only works if passed before -h (like -f -h or -fh)
+	f) fast="ye" ;;
+	d)
+		echo "test"
+		downloadonly=true
+		;;
+	esac
+done
+
+OPTIND=1
+
+while getopts "$optlist" option; do
+	case $option in
 	h) Help ;;
 	i)
 		install=true
@@ -174,7 +187,8 @@ while getopts ":hfi:r:vd" option; do
 		exit
 		;;
 	v) Version ;;
-	d) downloadonly=true ;;
 	\?) Help ;;
 	esac
 done
+
+shift $(($OPTIND - 1))
