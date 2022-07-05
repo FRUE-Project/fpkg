@@ -6,6 +6,7 @@ package_print_format="%-25s%-12s%-40s\n" #printf format
 ## DUMMY VALUES / NO LOGIC #
 ############################
 repo="FRUE-Games"
+repoURL="https://raw.githubusercontent.com/FRUE-Project/FRUE-Games/main/"
 ver="0.1-r1"
 fpkg_ver="0.1-r1"
 
@@ -14,6 +15,11 @@ function exit_with_error() {
 	echo "FATAL: $1"
 	echo "Aborting."
 	exit 1
+}
+
+function warn()
+{
+	echo "WARNING: $1"
 }
 
 function sleepy() {
@@ -53,55 +59,61 @@ function Install() {
 		sleepy 0.5
 		echo " These packages gon be INSTALLED: "
 		echo "======PKG=================VERSION=====================REPO================="
-		printf "$package_print_format" "$package.fpkg" "$ver" "$repo"
+		# shellcheck disable=SC2059
+		printf "$package_print_format" "${package}" "$ver" "$repo"
 		echo "==========================================================================="
-		read -rp "Cop packages n' install? [y/n]: " reply
+		
+		#Check if we are installing this package automatically (i.e. it's a dependency) (used by passing "auto" as 2nd parameter to function)
+		if [ "$2" != "auto" ]; then
+			read -rp "Cop packages n' install? [y/n]: " reply
+		else
+			reply="y"
+		fi
+		
 		case "$reply" in
 		[nN])
 			echo " !! Didn't do jack shit..."
 			;;
 
 		[yY])
-			echo " :: Downloadin' packages..."
-			if [[ -d /tmp/fpkg-cache ]]; then
-				cd /tmp/fpkg-cache || exit_with_error "Could not cd to '/tmp/fpkg-cache/'"
-			else
+			echo " :: Downloadin' package $package..."
+			
+			if [[ ! -d /tmp/fpkg-cache ]]; then
 				mkdir /tmp/fpkg-cache || exit_with_error "Could not create '/tmp/fpkg-cache/'"
-				chmod 777 -R /tmp/fpkg-cache
-				cd /tmp/fpkg-cache || exit_with_error "Could not cd to '/tmp/fpkg-cache/'"
+				chmod 755 -R /tmp/fpkg-cache
 			fi
-			wget "https://raw.githubusercontent.com/FRUE-Project/${repo}/main/${package}" >/dev/null 2>&1 || exit_with_error "Could not fetch package ${package}"
+			cd /tmp/fpkg-cache || exit_with_error "Could not cd to '/tmp/fpkg-cache/'"
+
+			
+			wget "${repoURL}${package}" >/dev/null 2>&1 || warn "Could not fetch package ${package}. Skipping."; return 2
+			
 			if [ "$downloadonly" = true ]; then
-				if [[ -d /etc/fpkg ]]; then
-					cd /etc/fpkg || exit_with_error "Could not cd to '/etc/fpkg/'"
-				else
-					mkdir /etc/fpkg || exit_with_error "Could not create '/etc/fpkg/'"
-					chmod 777 -R /etc/fpkg
-					cd /etc/fpkg || exit_with_error "Could not cd to '/etc/fpkg/'"
-				fi
-				mv "/tmp/fpkg-cache/${package}" /etc/fpkg || "Could not place executables in /etc/fpkg. Sry."
-				chmod +x "/etc/fpkg/${package}"
-			else
-				echo " :: Unpackin' executables..."
-				for file in "${package}"; do
-					case $(file --mime-type -b "${file}") in
-					*shellscript*)
-						mv "/tmp/fpkg-cache/${package}" /usr/bin || "Could not unpack executables. Sry."
-						sleepy 2
-						chmod +x "/usr/bin/${package}"
-						;;
-					application/gzip)
-						mkdir /tmp/fpkg-cache/"${package}-cache"
-						tar -xzvf /tmp/fpkg-cache/"${package}" -O /tmp/fpkg-cache/"${package}-cache" || "Could not unpack executables. Sry."
-						find . -print0 | while IFS= read -r -d'' f; do
-							file -ib $f | grep shellscr && mv $f /usr/bin
-							chmod +x "/usr/bin/$f"
-						done
-						;;
-					*) ;;
-					esac
-				done
+				echo " !! Package donwloaden'!!1 In '/tmp/fpkg-cache/'"
+				return 
 			fi
+			
+			echo " :: Unpackin' package..."
+			
+			mkdir /etc/fpkg/packages/"$package" || 
+			
+			#Handle .sh scripts and .fpkg files differently
+			case $(file --mime-type -b "${package}") in
+			*shellscript*)
+				mv "/tmp/fpkg-cache/${package}" /usr/bin || exit_with_error "Could not unpack executables. Sry."
+				sleepy 2
+				chmod +x "/usr/bin/${package}"
+				;;
+			application/gzip)
+				mkdir /tmp/fpkg-cache/"${package}-cache"
+				tar -xzvf /tmp/fpkg-cache/"${package}" -O /tmp/fpkg-cache/"${package}-cache" || exit_with_error "Could not unpack executables. Sry."
+				find . -print0 | while IFS= read -r -d'' f; do
+					file -ib "$f" | grep shellscr && mv "$f" /usr/bin
+					chmod +x "/usr/bin/$f"
+				done
+				;;
+			*) ;;
+			esac
+			
 			echo " :: Fixin' executables..."
 			sleepy 1
 			echo " :: Cleanin' up..."
@@ -124,6 +136,7 @@ function Remove() {
 		sleepy 0.5
 		echo "These packages gon be DELETED:"
 		echo "======PKG=================VERSION=====================REPO================="
+		# shellcheck disable=SC2059
 		printf "$package_print_format" "${package}" "$ver" "$repo"
 		echo "==========================================================================="
 		read -rp "Are you sure you wanna get rid of these packages? [y/n]: " yesno
@@ -171,6 +184,13 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 [[ -d /etc/fpkg/ ]] || mkdir /etc/fpkg/ || exit_with_error "Could not create '/etc/fpkg/'"
+chmod 755 /etc/fpkg/ || exit_with_error "Could not chmod '/etc/fpkg/'"
+
+[[ -d /etc/fpkg/packages/ ]] || mkdir /etc/fpkg/packages/ || exit_with_error "Could not create '/etc/fpkg/packages/'"
+chmod 755 /etc/fpkg/packages/ || exit_with_error "Could not chmod '/etc/fpkg/packages/'"
+
+[[ -d /etc/fpkg/repositories/ ]] || mkdir /etc/fpkg/repositories/ || exit_with_error "Could not create '/etc/fpkg/repositories/'"
+chmod 755 /etc/fpkg/repositories/ || exit_with_error "Could not chmod '/etc/fpkg/repositories/'"
 
 optlist=':hfi:r:vd'
 
@@ -188,14 +208,14 @@ while getopts "$optlist" option; do
 	h) Help ;;
 	i)
 		install=true
-		package=${OPTARG}
-		Install "${package}"
+		package=$OPTARG #should not treat it as an array
+		Install "$package"
 		exit
 		;;
 	r)
 		remove=true
-		package=${OPTARG}
-		Remove "${package}"
+		package=$OPTARG
+		Remove "$package"
 		exit
 		;;
 	v) Version ;;
@@ -203,4 +223,5 @@ while getopts "$optlist" option; do
 	esac
 done
 
+# shellcheck disable=SC2004
 shift $(($OPTIND - 1))
