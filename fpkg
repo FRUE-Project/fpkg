@@ -83,11 +83,26 @@ function Install() {
 				chmod +x "/etc/fpkg/${package}"
 			else
 				echo " :: Unpackin' executables..."
-				mv "/tmp/fpkg-cache/${package}" /usr/bin || "Could not unpack executables. Sry."
-				sleepy 2
-				echo " :: Fixin' executables..."
-				chmod +x "/usr/bin/${package}"
+				for file in "${package}"; do
+					case $(file --mime-type -b "${file}") in
+					*shellscript*)
+						mv "/tmp/fpkg-cache/${package}" /usr/bin || "Could not unpack executables. Sry."
+						sleepy 2
+						chmod +x "/usr/bin/${package}"
+						;;
+					application/gzip)
+						mkdir /tmp/fpkg-cache/"${package}-cache"
+						tar -xzvf /tmp/fpkg-cache/"${package}" -O /tmp/fpkg-cache/"${package}-cache" || "Could not unpack executables. Sry."
+						find . -print0 | while IFS= read -r -d'' f; do
+							file -ib $f | grep shellscr && mv $f /usr/bin
+							chmod +x "/usr/bin/$f"
+						done
+						;;
+					*) ;;
+					esac
+				done
 			fi
+			echo " :: Fixin' executables..."
 			sleepy 1
 			echo " :: Cleanin' up..."
 			echo " !! Done!!1 :)"
