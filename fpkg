@@ -171,9 +171,51 @@ function Version() {
 	exit 0
 }
 
-#function Purge {
-#empty for now
-#}
+function Purge {
+	echo " :: Lookin' in /usr/bin ..."
+	sleepy 1
+	echo " !! Packages finded!"
+	sleepy 0.5
+	echo "These packages gon be PURGED:"
+	echo "======PKG=================VERSION=====================REPO================="
+	# shellcheck disable=SC2059
+	printf "$package_print_format" "${package}" "$ver" "$repo"
+	echo "==========================================================================="
+	read -rp "Are you sure you wanna get rid of these packages? [y/n]: " yesno
+	case "$yesno" in
+	[nN])
+		echo " !! Didn't do jack shit..."
+		;;
+	[yY])
+		echo " !! Removing in 3..."
+		sleepy 1
+		echo " !! Removing in 2..."
+		sleepy 1
+		echo " !! Removing in 1..."
+		sleepy 1
+		if [[ -d /usr/bin/"${package}" ]]; then
+			rm -r /usr/bin/"${package:?}" || exit_with_error "Could. Not. Remove. Package."
+		elif [[ -f /usr/bin/"${package}" ]]; then
+			rm /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
+		else
+			echo " !! Error !! How 'bout yue install that package first?"
+			exit 1
+		fi
+		# shellcheck disable=SC2140
+		if [[ -d ~"${SUDO_USER}"/.config/"${package}*" ]]; then
+			rm -r ~"${SUDO_USER}"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
+		elif [[ -f ~"${SUDO_USER}"/.config/"${package}*" ]]; then
+			rm ~"${SUDO_USER}"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
+		else
+			echo " !! Error !! How 'bout yue install that package first?"
+			exit 1
+		fi
+		echo "Packages purgeded!!1 :)"
+		sleepy 1
+		;;
+	esac
+
+}
 
 #MAIN
 
@@ -191,7 +233,7 @@ chmod 755 /etc/fpkg/packages/ || exit_with_error "Could not chmod '/etc/fpkg/pac
 [[ -d /etc/fpkg/repositories/ ]] || mkdir /etc/fpkg/repositories/ || exit_with_error "Could not create '/etc/fpkg/repositories/'"
 chmod 755 /etc/fpkg/repositories/ || exit_with_error "Could not chmod '/etc/fpkg/repositories/'"
 
-optlist=':hfi:r:vd' #add new opts here
+optlist=':hfi:r:vdp:' #add new opts here
 
 ####################
 # PRIORITY OPTIONS #
@@ -221,6 +263,11 @@ while getopts "$optlist" option; do
 		remove=true
 		package=$OPTARG
 		Remove "$package"
+		exit
+		;;
+	p)
+		package=$OPTARG
+		Purge "$package"
 		exit
 		;;
 	v) Version ;;
