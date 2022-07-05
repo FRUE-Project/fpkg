@@ -162,10 +162,7 @@ optlist=':hfi:r:vd'
 while getopts "$optlist" option; do
 	case $option in
 	f) fast="ye" ;;
-	d)
-		echo "test"
-		downloadonly=true
-		;;
+	d) downloadonly=true ;;
 	esac
 done
 
