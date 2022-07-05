@@ -27,6 +27,33 @@ function sleepy() {
 	fi
 }
 
+function remover() {
+	echo " !! Removing in 3..."
+	sleepy 1
+	echo " !! Removing in 2..."
+	sleepy 1
+	echo " !! Removing in 1..."
+	sleepy 1
+	if [[ -d /usr/bin/"${package}" ]]; then
+		rm -r /usr/bin/"${package:?}" || exit_with_error "Could. Not. Remove. Package."
+	elif [[ -f /usr/bin/"${package}" ]]; then
+		rm /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
+	else
+		echo " !! Error !! How 'bout yue install that package first?"
+		exit 1
+	fi
+	echo "Packages removed!!1 :)"
+	sleepy 1
+
+}
+
+function pkginfo() {
+	echo "======PKG=================VERSION=====================REPO================="
+	# shellcheck disable=SC2059
+	printf "$package_print_format" "${package}" "$ver" "$repo"
+	echo "==========================================================================="
+}
+
 function Help() {
 	echo "FRUE Package Kit Getter"
 	echo "============================="
@@ -57,10 +84,7 @@ function Install() {
 		echo " !! Package finded!"
 		sleepy 0.5
 		echo " These packages gon be INSTALLED: "
-		echo "======PKG=================VERSION=====================REPO================="
-		# shellcheck disable=SC2059
-		printf "$package_print_format" "${package}" "$ver" "$repo"
-		echo "==========================================================================="
+		pkginfo
 
 		#Check if we are installing this package automatically (i.e. it's a dependency) (used by passing "auto" as 2nd parameter to function)
 		if [ "$2" != "auto" ]; then
@@ -134,32 +158,14 @@ function Remove() {
 		echo " !! Packages finded!"
 		sleepy 0.5
 		echo "These packages gon be DELETED:"
-		echo "======PKG=================VERSION=====================REPO================="
-		# shellcheck disable=SC2059
-		printf "$package_print_format" "${package}" "$ver" "$repo"
-		echo "==========================================================================="
+		pkginfo
 		read -rp "Are you sure you wanna get rid of these packages? [y/n]: " yesno
 		case "$yesno" in
 		[nN])
 			echo " !! Didn't do jack shit..."
 			;;
 		[yY])
-			echo " !! Removing in 3..."
-			sleepy 1
-			echo " !! Removing in 2..."
-			sleepy 1
-			echo " !! Removing in 1..."
-			sleepy 1
-			if [[ -d /usr/bin/"${package}" ]]; then
-				rm -r /usr/bin/"${package:?}" || exit_with_error "Could. Not. Remove. Package."
-			elif [[ -f /usr/bin/"${package}" ]]; then
-				rm /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
-			else
-				echo " !! Error !! How 'bout yue install that package first?"
-				exit 1
-			fi
-			echo "Packages removed!!1 :)"
-			sleepy 1
+			remover
 			;;
 		esac
 	fi
@@ -177,30 +183,14 @@ function Purge {
 	echo " !! Packages finded!"
 	sleepy 0.5
 	echo "These packages gon be PURGED:"
-	echo "======PKG=================VERSION=====================REPO================="
-	# shellcheck disable=SC2059
-	printf "$package_print_format" "${package}" "$ver" "$repo"
-	echo "==========================================================================="
+	pkginfo
 	read -rp "Are you sure you wanna get rid of these packages? [y/n]: " yesno
 	case "$yesno" in
 	[nN])
 		echo " !! Didn't do jack shit..."
 		;;
 	[yY])
-		echo " !! Removing in 3..."
-		sleepy 1
-		echo " !! Removing in 2..."
-		sleepy 1
-		echo " !! Removing in 1..."
-		sleepy 1
-		if [[ -d /usr/bin/"${package}" ]]; then
-			rm -r /usr/bin/"${package:?}" || exit_with_error "Could. Not. Remove. Package."
-		elif [[ -f /usr/bin/"${package}" ]]; then
-			rm /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
-		else
-			echo " !! Error !! How 'bout yue install that package first?"
-			exit 1
-		fi
+		remover
 		# shellcheck disable=SC2140
 		if [[ -d ~"${SUDO_USER}"/.config/"${package}*" ]]; then
 			rm -r ~"${SUDO_USER}"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
