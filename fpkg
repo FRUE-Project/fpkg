@@ -152,7 +152,7 @@ function Version() {
 
 #Check for root privileges
 if [ "$EUID" -ne 0 ]; then
-	exit_with_error "This script must be run as root."
+	exit_with_error "Yue have no permission, duh!!11!1"
 fi
 
 [[ -d /etc/fpkg/ ]] || mkdir /etc/fpkg/ || exit_with_error "Could not create '/etc/fpkg/'"
