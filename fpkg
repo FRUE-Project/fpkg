@@ -61,6 +61,9 @@ function Help() {
 	echo "Version $fpkg_ver"
 	echo "============================="
 	sleepy 1
+	echo "Usage:	fpkg [options]"
+	echo "============================="
+	sleepy 1
 	echo " "
 	echo "Options:"
 	echo "	-i - installs a package"
