@@ -28,12 +28,12 @@ function sleepy() {
 }
 
 function remover() {
-	echo " !! Removing in 3..."
-	sleepy 1
-	echo " !! Removing in 2..."
-	sleepy 1
-	echo " !! Removing in 1..."
-	sleepy 1
+	((i=3))
+	# shellcheck disable=SC2034
+	for run in {1..3}; do
+		printf ' !! Removing in %s...\n' $i && ((i++))
+		sleep 1
+	done
 	if [[ -d /usr/bin/"${package}" ]]; then
 		rm -r /usr/bin/"${package:?}" || exit_with_error "Could. Not. Remove. Package."
 	elif [[ -f /usr/bin/"${package}" ]]; then
@@ -195,10 +195,10 @@ function Purge {
 	[yY])
 		remover
 		# shellcheck disable=SC2140
-		if [[ -d ~"${SUDO_USER}"/.config/"${package}*" ]]; then
-			rm -r ~"${SUDO_USER}"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
-		elif [[ -f ~"${SUDO_USER}"/.config/"${package}*" ]]; then
-			rm ~"${SUDO_USER}"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
+		if [[ -d "$HOME"/.config/"${package}*" ]]; then
+			rm -r "$HOME"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
+		elif [[ -f "$HOME"/.config/"${package}*" ]]; then
+			rm "$HOME"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
 		else
 			echo " !! Error !! How 'bout yue install that package first?"
 			exit 1
