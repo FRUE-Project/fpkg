@@ -27,13 +27,18 @@ function sleepy() {
 	fi
 }
 
-function remover() {
-	((i=3))
-	# shellcheck disable=SC2034
-	for run in {1..3}; do
-		printf ' !! Removing in %s...\n' $i && ((i--))
+#Creates countdowns; used as: countdown <START> 'Countdown msg'
+function countdown(){
+	((s=$1))
+	for i in $(seq $s -1 1); do
+		printf ' %s %s...\n' "$2" "$i" && ((i--))
 		sleep 1
 	done
+}
+
+function remover() {
+	# shellcheck disable=SC2034
+	countdown 3 ' !! Removing in'
 	if [[ -d /usr/bin/"${package}" ]]; then
 		rm -r /usr/bin/"${package:?}" || exit_with_error "Could. Not. Remove. Package."
 	elif [[ -f /usr/bin/"${package}" ]]; then
