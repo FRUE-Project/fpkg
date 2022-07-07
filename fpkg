@@ -28,8 +28,8 @@ function sleepy() {
 }
 
 #Creates countdowns; used as: countdown <START> 'Countdown msg'
-function countdown(){
-	((s=$1))
+function countdown() {
+	((s = $1))
 	for i in $(seq $s -1 1); do
 		printf ' %s %s...\n' "$2" "$i" && ((i--))
 		sleep 1
@@ -81,6 +81,10 @@ function Help() {
 	exit 0
 }
 
+function cleanup() {
+	rm -rf /tmp/fpkg-cache/"${package}"
+}
+
 function Install() {
 	if [ "$remove" = true ]; then
 		echo ""
@@ -113,8 +117,8 @@ function Install() {
 				mkdir /tmp/fpkg-cache || exit_with_error "Could not create '/tmp/fpkg-cache/'"
 				chmod 755 -R /tmp/fpkg-cache
 			fi
-			cd /tmp/fpkg-cache || exit_with_error "Could not cd to '/tmp/fpkg-cache/'"
-
+			mkdir /tmp/fpkg-cache/"${package}"
+			cd /tmp/fpkg-cache/"${package}" || exit_with_error "Could not cd to '/tmp/fpkg-cache/${package}'"
 			wget "${repoURL}${package}" >/dev/null 2>&1 || warn "Could not fetch package ${package}. Skipping."
 			return 2
 
@@ -148,6 +152,7 @@ function Install() {
 			echo " :: Fixin' executables..."
 			sleepy 1
 			echo " :: Cleanin' up..."
+			cleanup
 			echo " !! Done!!1 :)"
 			sleepy 1
 			;;
@@ -179,6 +184,18 @@ function Remove() {
 	fi
 }
 
+function ConfClean() {
+	# shellcheck disable=SC2140
+	if [[ -d "$HOME"/.config/"${package}*" ]]; then
+		rm -r "$HOME"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
+	elif [[ -f "$HOME"/.config/"${package}*" ]]; then
+		rm "$HOME"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
+	else
+		echo " !! Error !! Sth went totally wrongy while deleting conf"
+		exit 1
+	fi
+}
+
 function Version() {
 	echo "$fpkg_ver"
 	echo "© 2022, FRUE Project"
@@ -199,15 +216,7 @@ function Purge {
 		;;
 	[yY])
 		remover
-		# shellcheck disable=SC2140
-		if [[ -d "$HOME"/.config/"${package}*" ]]; then
-			rm -r "$HOME"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
-		elif [[ -f "$HOME"/.config/"${package}*" ]]; then
-			rm "$HOME"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
-		else
-			echo " !! Error !! How 'bout yue install that package first?"
-			exit 1
-		fi
+		ConfClean
 		echo "Packages purgeded!!1 :)"
 		sleepy 1
 		;;
@@ -231,7 +240,7 @@ chmod 755 /etc/fpkg/packages/ || exit_with_error "Could not chmod '/etc/fpkg/pac
 [[ -d /etc/fpkg/repositories/ ]] || mkdir /etc/fpkg/repositories/ || exit_with_error "Could not create '/etc/fpkg/repositories/'"
 chmod 755 /etc/fpkg/repositories/ || exit_with_error "Could not chmod '/etc/fpkg/repositories/'"
 
-optlist=':hfi:r:vdp:' #add new opts here
+optlist=':hfi:r:vdp:c:' #add new opts here
 
 ####################
 # PRIORITY OPTIONS #
@@ -261,6 +270,11 @@ while getopts "$optlist" option; do
 		remove=true
 		package=$OPTARG
 		Remove "$package"
+		exit
+		;;
+	c)
+		package=$OPTARG
+		ConfClean "$package"
 		exit
 		;;
 	p)
