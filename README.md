@@ -12,10 +12,14 @@ Currently, FPKG is being developed, but usage would most likely be like this:
 - **-u** - update packages (not available at the moment)
 
 # Supported Platforms
+Official support:
+- Linux (tested with openFRUE, Debian-based distros)
 
-- Linux (Ubuntu/Debian , Fedora/RHEL , Gentoo , Arch , etc.)
-- macOS (Mac OS X 10.5+)
-- BSD (FreeBSD , OpenBSD , NetBSD)
+Not tested:
+- MacOS
+- BSD
+
+*Requirements: `bash`*
 
 # Installation
 
