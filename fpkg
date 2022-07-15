@@ -93,8 +93,9 @@ function Install() {
 	else
 		echo " :: Searchin' for package ..."
   
-		if curl --silent --fail -r 0-0 "${repoURL}${package}"; then
-   echo " !! Package finded."
+		#if curl --silent --fail -r 0-0 "${repoURL}${package}"; then
+		if wget -q --method=HEAD ${repoURL}${package}; then
+		 echo " !! Package finded."
   else
    echo " !! PACKAGE NOT FOUND"
 			echo "ABORTING"
