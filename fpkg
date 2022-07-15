@@ -92,8 +92,15 @@ function Install() {
 		exit 0
 	else
 		echo " :: Searchin' for package ..."
-		sleepy 3
-		echo " !! Package finded!"
+  
+		if wget -q --method=HEAD ${repoURL}${package}; then
+		 echo " !! Package finded."
+  else
+   echo " !! Package ${package} not found."
+			echo " !! ABORTING"
+			return 1
+		fi
+
 		sleepy 0.5
 		echo " These packages gon be INSTALLED: "
 		pkginfo
