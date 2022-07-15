@@ -19,7 +19,7 @@ Not tested:
 - MacOS
 - BSD
 
-*Requirements: `bash`, `wget`*
+*Requirements: `bash`, `wget`, `curl`*
 
 # Installation
 
