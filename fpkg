@@ -50,7 +50,7 @@ function remover() {
 	elif [[ -f /usr/bin/"${package}" ]]; then
 		rm /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
 	else
-		echo " !! Error !! How 'bout yue install that package first?"
+		echo -e "${C_RED} !! Error !! How 'bout yue install that package first?${C_NORMAL}"
 		exit 1
 	fi
 	echo "Packages removed!!1 :)"
@@ -61,28 +61,28 @@ function remover() {
 function pkginfo() {
 	echo "======PKG=================VERSION=====================REPO================="
 	# shellcheck disable=SC2059
-	printf "$package_print_format" "${package}" "$ver" "$repo"
+	printf "$package_print_format" "${C_GREEN}${package}${C_NORMAL}" "$ver" "$repo"
 	echo "==========================================================================="
 }
 
 function Help() {
-	echo "FRUE Package Kit Getter"
+	echo -e "${C_GREEN}FRUE Package Kit Getter${C_NORMAL}"
 	echo "============================="
 	sleepy 0.5
-	echo "Version $fpkg_ver"
+	echo -e "Version ${C_BLUE}$fpkg_ver${C_NORMAL}"
 	echo "============================="
 	sleepy 1
 	echo "Usage:	fpkg [options]"
 	echo "============================="
 	sleepy 1
-	echo " "
+	echo -e " ${C_BLUE}"
 	echo "Options:"
 	echo "	-i - installs a package"
 	echo "	-r - removes a package"
 	echo "	-h - displays this help dialog and exits"
 	echo "	-f - sets 'fast mode' (waits are skipped)"
 	echo "	-v - display version"
-	echo "	-d - only download the package and save it in /etc/fpkg"
+	echo -e "	-d - only download the package and save it in /etc/fpkg ${C_NORMAL}"
 	sleepy 1
 	exit 0
 }
@@ -94,20 +94,19 @@ function cleanup() {
 function Install() {
 	if [ "$remove" = true ]; then
 		echo ""
-		echo "Already removed sumthing, not gonna install dat"
+		echo -e "${C_RED}Already removed sumthing, not gonna install dat${C_NORMAL}"
 		exit 0
 	else
 		echo " :: Searchin' for package ..."
   
 		if wget -q --method=HEAD ${repoURL}${package}; then
-		 echo " !! Package finded."
+		 echo -e "${C_GREEN} :: Package finded.${C_NORMAL}"
   else
-   echo " !! Package ${package} not found."
-			echo " !! ABORTING"
+   echo -e "${C_RED} !! Package ${package} not found."
+			echo -e " !! ABORTING${C_NORMAL}"
 			return 1
 		fi
 
-		sleepy 0.5
 		echo " These packages gon be INSTALLED: "
 		pkginfo
 
@@ -124,7 +123,7 @@ function Install() {
 			;;
 
 		[yY])
-			echo " :: Downloadin' package $package..."
+			echo -e " :: Downloadin' package ${C_BLUE}$package${C_NORMAL}..."
 
 			if [[ ! -d /tmp/fpkg-cache ]]; then
 				mkdir /tmp/fpkg-cache || exit_with_error "Could not create '/tmp/fpkg-cache/'"
@@ -176,7 +175,7 @@ function Install() {
 function Remove() {
 	if [ "$install" = true ]; then
 		echo ""
-		echo "Already installed sumthing, not gonna remove dat"
+		echo -e "${C_RED}Already installed sumthing, not gonna remove dat${C_NORMAL}"
 		exit 0
 	else
 		echo " :: Lookin' in /usr/bin ..."
@@ -204,14 +203,14 @@ function ConfClean() {
 	elif [[ -f "$HOME"/.config/"${package}*" ]]; then
 		rm "$HOME"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
 	else
-		echo " !! Error !! Sth went totally wrongy while deleting conf"
+		echo -e "${C_RED} !! Error !! Sth went totally wrongy while deleting conf${C_NORMAL}"
 		exit 1
 	fi
 }
 
 function Version() {
 	echo "$fpkg_ver"
-	echo "© 2022, FRUE Project"
+	echo -e "${C_BLUE}© 2022, FRUE Project${C_NORMAL}"
 	exit 0
 }
 
@@ -220,12 +219,12 @@ function Purge {
 	sleepy 1
 	echo " !! Packages finded!"
 	sleepy 0.5
-	echo "These packages gon be PURGED:"
+	echo -e "These packages gon be ${C_RED}PURGED${C_NORMAL}:"
 	pkginfo
 	read -rp "Are you sure you wanna get rid of these packages? [y/n]: " yesno
 	case "$yesno" in
 	[nN])
-		echo " !! Didn't do jack shit..."
+		echo -e "${C_RED} !! Didn't do jack shit...${C_NORMAL}"
 		;;
 	[yY])
 		remover
