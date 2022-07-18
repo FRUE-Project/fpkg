@@ -61,7 +61,7 @@ function remover() {
 function pkginfo() {
 	echo "======PKG=================VERSION=====================REPO================="
 	# shellcheck disable=SC2059
-	printf "$package_print_format" "${C_GREEN}${package}${C_NORMAL}" "$ver" "$repo"
+	printf "$package_print_format" "${package}" "$ver" "$repo"
 	echo "==========================================================================="
 }
 
