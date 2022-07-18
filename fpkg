@@ -2,6 +2,12 @@
 fast="nae"
 package_print_format="%-25s%-12s%-40s\n" #printf format
 
+# Define colours as escape sequence characters.
+C_NORMAL="\e[0m"
+C_RED="\e[31m"
+C_GREEN="\e[32m"
+C_BLUE="\e[34m"
+
 ############################
 ## DUMMY VALUES / NO LOGIC #
 ############################
