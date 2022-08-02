@@ -13,7 +13,7 @@ fpkg_ver="0.1-r1"
 #Takes error message as first parameter; used as: command || exit_with_error <MSG>
 function exit_with_error() {
 	echo "FATAL: $1"
-	echo "Aborting."
+	echo "Abortin'."
 	exit 1
 }
 
@@ -40,14 +40,14 @@ function remover() {
 	# shellcheck disable=SC2034
 	countdown 3 ' !! Removing in'
 	if [[ -d /usr/bin/"${package}" ]]; then
-		rm -r /usr/bin/"${package:?}" || exit_with_error "Could. Not. Remove. Package."
+		rm -r /usr/bin/"${package:?}" || exit_with_error "!! Error !! Couldn't remove package."
 	elif [[ -f /usr/bin/"${package}" ]]; then
-		rm /usr/bin/"${package}" || exit_with_error "Could. Not. Remove. Package."
+		rm /usr/bin/"${package}" || exit_with_error "!! Error !! Couldn't remove package."
 	else
 		echo " !! Error !! How 'bout yue install that package first?"
 		exit 1
 	fi
-	echo "Packages removed!!1 :)"
+	echo "!! Packages removed!!1 :)"
 	sleepy 1
 
 }
@@ -88,7 +88,7 @@ function cleanup() {
 function Install() {
 	if [ "$remove" = true ]; then
 		echo ""
-		echo "Already removed sumthing, not gonna install dat"
+		echo "!! Error !! Already removed sumthin', ain't gonna install that"
 		exit 0
 	else
 		echo " :: Searchin' for package ..."
@@ -97,7 +97,7 @@ function Install() {
 		 echo " !! Package finded."
   else
    echo " !! Package ${package} not found."
-			echo " !! ABORTING"
+			echo " !! ABORTIN'"
 			return 1
 		fi
 
@@ -125,8 +125,8 @@ function Install() {
 				chmod 755 -R /tmp/fpkg-cache
 			fi
 			mkdir /tmp/fpkg-cache/"${package}"
-			cd /tmp/fpkg-cache/"${package}" || exit_with_error "Could not cd to '/tmp/fpkg-cache/${package}'"
-			wget "${repoURL}${package}" >/dev/null 2>&1 || warn "Could not fetch package ${package}. Skipping."
+			cd /tmp/fpkg-cache/"${package}" || exit_with_error "!! Error !! Could not cd to '/tmp/fpkg-cache/${package}'"
+			wget "${repoURL}${package}" >/dev/null 2>&1 || warn "!! Error!! Could not fetch package ${package}. Skippin'."
 			return 2
 
 			if [ "$downloadonly" = true ]; then
@@ -170,7 +170,7 @@ function Install() {
 function Remove() {
 	if [ "$install" = true ]; then
 		echo ""
-		echo "Already installed sumthing, not gonna remove dat"
+		echo "!! Error !! Already installed sumthin', ain't gonna remove that"
 		exit 0
 	else
 		echo " :: Lookin' in /usr/bin ..."
@@ -194,11 +194,11 @@ function Remove() {
 function ConfClean() {
 	# shellcheck disable=SC2140
 	if [[ -d "$HOME"/.config/"${package}*" ]]; then
-		rm -r "$HOME"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
+		rm -r "$HOME"/.config/"${package}*" || exit_with_error "!! Error!! Couldn't remove config."
 	elif [[ -f "$HOME"/.config/"${package}*" ]]; then
-		rm "$HOME"/.config/"${package}*" || exit_with_error "Could. Not. Remove. Config."
+		rm "$HOME"/.config/"${package}*" || exit_with_error "!! Error !! Couldn't remove config."
 	else
-		echo " !! Error !! Sth went totally wrongy while deleting conf"
+		echo " !! Error !! Sum'n went wrong while removin' that config, my bad."
 		exit 1
 	fi
 }
@@ -224,7 +224,7 @@ function Purge {
 	[yY])
 		remover
 		ConfClean
-		echo "Packages purgeded!!1 :)"
+		echo "!! Packages pugeded!!1 :)"
 		sleepy 1
 		;;
 	esac
@@ -235,17 +235,17 @@ function Purge {
 
 #Check for root privileges
 if [ "$EUID" -ne 0 ]; then
-	exit_with_error "Yue have no permission, duh!!11!1"
+	exit_with_error "!! Error !! Yue gon need root for this dumbass."
 fi
 
-[[ -d /etc/fpkg/ ]] || mkdir /etc/fpkg/ || exit_with_error "Could not create '/etc/fpkg/'"
-chmod 755 /etc/fpkg/ || exit_with_error "Could not chmod '/etc/fpkg/'"
+[[ -d /etc/fpkg/ ]] || mkdir /etc/fpkg/ || exit_with_error "!! Error !! Could not create '/etc/fpkg/'"
+chmod 755 /etc/fpkg/ || exit_with_error "!! Error!! Could not chmod '/etc/fpkg/'"
 
-[[ -d /etc/fpkg/packages/ ]] || mkdir /etc/fpkg/packages/ || exit_with_error "Could not create '/etc/fpkg/packages/'"
-chmod 755 /etc/fpkg/packages/ || exit_with_error "Could not chmod '/etc/fpkg/packages/'"
+[[ -d /etc/fpkg/packages/ ]] || mkdir /etc/fpkg/packages/ || exit_with_error "!! Error !! Could not create '/etc/fpkg/packages/'"
+chmod 755 /etc/fpkg/packages/ || exit_with_error "!! Error !! Could not chmod '/etc/fpkg/packages/'"
 
-[[ -d /etc/fpkg/repositories/ ]] || mkdir /etc/fpkg/repositories/ || exit_with_error "Could not create '/etc/fpkg/repositories/'"
-chmod 755 /etc/fpkg/repositories/ || exit_with_error "Could not chmod '/etc/fpkg/repositories/'"
+[[ -d /etc/fpkg/repositories/ ]] || mkdir /etc/fpkg/repositories/ || exit_with_error "!! Error !! Could not create '/etc/fpkg/repositories/'"
+chmod 755 /etc/fpkg/repositories/ || exit_with_error "!! Error !! Could not chmod '/etc/fpkg/repositories/'"
 
 optlist=':hfi:r:vdp:c:' #add new opts here
 
