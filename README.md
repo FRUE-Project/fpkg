@@ -13,13 +13,13 @@ Currently, FPKG is being developed, but usage would most likely be like this:
 
 # Supported Platforms
 Official support:
-- Linux (tested with openFRUE, Debian-based distros)
+- Linux (tested with openFRUE,Debian-based distros)
 
 Not tested:
-- MacOS
-- BSD
+- macOS (required: 10.5+)
+- BSD (such as FreeBSD,OpenBSD,NetBSD)
 
-*Requirements: `bash`, `wget`*
+*Requirements: `bash`,`wget`,and `some common sense`*
 
 # Installation
 
@@ -29,6 +29,9 @@ To install FPKG;
 - Run ```chmod +x /path/to/fpkg```
 - Move ```fpkg``` to /usr/bin/
 - Make FPKG home directory (/home/FPKG) [this is used for the -d option]
+
+Or, you can use the install script provided here.
+Usage: ```sudo sh /path/to/fpkg.installer```
 
 # Support 
 
