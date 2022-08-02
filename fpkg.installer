@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+#check for root
+if [ "$EUID" -ne 0 ]; then
+	echo "!! Error !! Yue gon need root for this dumbass."
+	exit 1
+fi
+#startup
+echo "FPKG Installer v0.1-r1 by sudQ"
+sleep 0.5
+echo " "
+if [[ -f /usr/bin/fpkg ]]; then
+	echo "!! Error !! FPKG is already installed, so we aint gonna do jack shit."
+else
+	read -rp "Are you sure you want to install FPKG? [yes/no] " reply
+	case "$reply" in
+		[yY][eE][sS])
+			fpkginstall
+			;;
+		[nN][oO])
+			noinst
+			;;
+	esac
+
+#install function
+
+	function fpkginstall {
+		 echo "!! K then, we gon download some shit."       
+                        cd /tmp/fpkg-dl 
+                        wget -t=10 https://raw.githubusercontent.com/FRUE-Project/fpkg/main/fpkg >/dev/null 2>&1 || exit_with_error "!! Error !! Couldn't download FPKG, try again some other time."                               
+                        sleep 0.5
+                        echo ":: Finished coppin' them files, installin' now"
+                        mv /tmp/fpkg-dl/fpkg /usr/bin || exit_with_error "!! Err
+or !! Couldn't move files." 
+                        chmod +x /usr/bin/fpkg || exit_with_error "!! Error !! Could not docter/fix up files, my bad."
+                        echo "!! Installation completed, enjoy usin' FPKG!!111 :)"
+}
+
+#don't install function
+
+	function noinst {
+		echo "!! K then, ain't gonna install. Exitin'."
+		exit 1
+}
+fi
+exit 1
