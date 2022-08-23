@@ -19,7 +19,7 @@ echo " "
 if [[ -f /usr/bin/fpkg ]]; then
 	echo "!! Error !! FPKG is already installed, so we aint gonna do jack shit."
 else
-	read -rp "Are you sure you want to install FPKG? [yes/no] " reply
+	read -rp "Are you sure you want to install FPKG (v0.1-r2) ? [yes/no] " reply
 	case "$reply" in
 		[yY][eE][sS])
 			fpkginstall
@@ -46,7 +46,7 @@ or !! Couldn't move files."
 #don't install function
 
 function noinst {
-		echo "!! K then, ain't gonna install. Exitin'."
+		echo "!! K then, ain't gonna install, don't know why you ran this but ok. Exitin'."
 		exit 1
 }
 fi
