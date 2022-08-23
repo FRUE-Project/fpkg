@@ -8,7 +8,7 @@ package_print_format="%-25s%-12s%-40s\n" #printf format
 repo="FRUE-Games"
 repoURL="https://raw.githubusercontent.com/FRUE-Project/FRUE-Games/main/"
 ver="0.1-r1"
-fpkg_ver="0.1-r1"
+fpkg_ver="0.1-r2"
 
 #Takes error message as first parameter; used as: command || exit_with_error <MSG>
 function exit_with_error() {
@@ -146,7 +146,7 @@ function Install() {
 					chmod +x "/usr/bin/${package}"
 					;;
 				application/gzip)
-					mkdir /tmp/fpkg-cache/"${package}-cache"
+					mkdir -p /tmp/fpkg-cache/"${package}-cache"
 					tar -xzvf /tmp/fpkg-cache/"${package}" -O /tmp/fpkg-cache/"${package}-cache" || exit_with_error "Could not unpack executables. My bad."
 					find . -print0 | while IFS= read -r -d'' f; do
 						file -ib "$f" | grep shellscr && mv "$f" /usr/bin
@@ -205,12 +205,13 @@ function ConfClean() {
 
 function Version() {
 	echo "$fpkg_ver"
-	echo "© 2022, FRUE Project"
+	echo "© 2021 - 2022, FRUE Project"
+	echo "No rights reserved."
 	exit 0
 }
 
 function Purge {
-	echo " :: Lookin' in /usr/bin ..."
+	echo " :: Lookin' for packages ..."
 	sleepy 1
 	echo " !! Packages finded!"
 	sleepy 0.5
