@@ -13,11 +13,12 @@ Currently, FPKG is being developed, but usage would most likely be like this:
 
 # Supported Platforms
 Official support:
-- Linux (tested with openFRUE,Debian-based distros)
+- Linux (tested with openFRUE,Arch, & Debian-based distros)
+- FreeBSD (tested with FreeBSD)
 
 Not tested:
 - macOS (required: 10.5+)
-- BSD (such as FreeBSD,OpenBSD,NetBSD)
+- *BSD (OpenBSD & NetBSD)
 
 *Requirements: `bash`,`wget`,and `some common sense`*
 
