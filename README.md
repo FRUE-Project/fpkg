@@ -5,7 +5,7 @@ FPKG is a package manager for managing FRUE Software, such as FRUEBoxWM, FRUE-Ut
 Currently, FPKG is being developed, but usage would most likely be like this:
 - **-i** - installs the given package
 - **-s** - searches repositories for packages matching query
-- **-r** - deletes the given package
+- **-r** - removes the given package
 - **-v** - print version
 - **-a** - gives information about FPKG, also provies a list of options
 - **-d** - download packages, but do not install (by default, it downloads to ~/FPKG
@@ -20,18 +20,12 @@ Not tested:
 - macOS (required: 10.5+)
 - *BSD (OpenBSD & NetBSD)
 
-*Requirements: `bash`,`wget`,and `some common sense`*
+**Requirements: `bash`,`wget`,probably `curl`, and a UNIX-Like OS**
 
 # Installation
 
 To install FPKG;
-
-- Clone repository
-- Run ```chmod +x /path/to/fpkg```
-- Move ```fpkg``` to /usr/bin/
-- Make FPKG home directory (/home/FPKG) [this is used for the -d option]
-
-Or, you can use the install script provided here.
+- Download the installer by using wget/curl on the raw.github page
 Usage: ```sudo sh /path/to/fpkg.installer```
 
 # Support 
