@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 fast="nae"
 package_print_format="%-25s%-12s%-40s\n" #printf format
 
@@ -235,8 +235,9 @@ function Purge {
 #MAIN
 
 #Check for root privileges
-if [ "$EUID" -ne 0 ]; then
-	exit_with_error "Yue gon need root for this dumbass."
+if ! [ $(id -u) = 0 ]; then
+   exit_with_error "Yue gon need root for this dumbass."
+   exit 1
 fi
 
 [[ -d /etc/fpkg/ ]] || mkdir /etc/fpkg/ || exit_with_error "Could not create '/etc/fpkg/'"
