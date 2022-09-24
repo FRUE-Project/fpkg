@@ -6,11 +6,8 @@ package_print_format="%-25s%-12s%-40s\n" #printf format
 ## DUMMY VALUES / NO LOGIC #
 ############################
 
-# repo="FRUE-Games"
-# repoURL="https://raw.githubusercontent.com/FRUE-Project/FRUE-Games/main/"
-
-repo="FRUE-Test"
-repoURL="https://raw.githubusercontent.com/Tuhkis/fpkg-test-repo/main/"
+repo="FRUE-Games"
+repoURL="https://raw.githubusercontent.com/FRUE-Project/FRUE-Games/main/"
 
 ver="0.1-r1"
 fpkg_ver="0.1-r2"
@@ -151,7 +148,6 @@ function Install() {
 					chmod +x "/usr/bin/${package}"
 					;;
 				application/gzip)
-					echo "Hi mum!"
 					mkdir -p /tmp/fpkg-cache/"${package}-cache"
 					tar -xzvf /tmp/fpkg-cache/"${package}" -O /tmp/fpkg-cache/"${package}-cache" || exit_with_error "Could not unpack executables. My bad."
 					find . -print0 | while IFS= read -r -d'' f; do
