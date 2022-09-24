@@ -5,8 +5,13 @@ package_print_format="%-25s%-12s%-40s\n" #printf format
 ############################
 ## DUMMY VALUES / NO LOGIC #
 ############################
-repo="FRUE-Games"
-repoURL="https://raw.githubusercontent.com/FRUE-Project/FRUE-Games/main/"
+
+# repo="FRUE-Games"
+# repoURL="https://raw.githubusercontent.com/FRUE-Project/FRUE-Games/main/"
+
+repo="FRUE-Test"
+repoURL="https://raw.githubusercontent.com/Tuhkis/fpkg-test-repo/main/"
+
 ver="0.1-r1"
 fpkg_ver="0.1-r2"
 
@@ -94,9 +99,9 @@ function Install() {
 		echo " :: Searchin' for package ..."
   
 		if wget -q --method=HEAD ${repoURL}${package}; then
-		 echo " !! Package finded."
-  else
-   echo " !! Package ${package} not found."
+			echo " !! Package finded."
+		else
+			echo " !! Package ${package} not found."
 			echo " !! Abort !!"
 			return 1
 		fi
@@ -107,7 +112,7 @@ function Install() {
 
 		#Check if we are installing this package automatically (i.e. it's a dependency) (used by passing "auto" as 2nd parameter to function)
 		if [ "$2" != "auto" ]; then
-			read -rp "Cop packages n' install? [y/n]: " reply
+			read -rp "Cop packages n' install? [Y/n]: " reply
 		else
 			reply="y"
 		fi
@@ -146,6 +151,7 @@ function Install() {
 					chmod +x "/usr/bin/${package}"
 					;;
 				application/gzip)
+					echo "Hi mum!"
 					mkdir -p /tmp/fpkg-cache/"${package}-cache"
 					tar -xzvf /tmp/fpkg-cache/"${package}" -O /tmp/fpkg-cache/"${package}-cache" || exit_with_error "Could not unpack executables. My bad."
 					find . -print0 | while IFS= read -r -d'' f; do
