@@ -11,7 +11,10 @@ function exit_with_error() {
 	echo " !! Abort !! "
 	exit 1
 }
-
+#check for bash 5
+if ((BASH_VERSIONINFO[0] < 5)); then
+	exit_with_error "You need Bash 5+ to run FPKG! :("
+fi
 #startup
 echo "FPKG Installer v0.1-r1 by sudQ#2328"
 sleep 0.5
