@@ -17,10 +17,10 @@ Official support:
 - FreeBSD
 
 Not tested:
-- macOS (required: 10.5+)
+- macOS (best on Yosemite and up)
 - *BSD (OpenBSD & NetBSD)
 
-**Requirements: `bash`,`wget`,probably `curl`, and a UNIX-Like OS**
+**Requirements: `bash`,`wget`,probably `curl`, Bash 5+, and a UNIX-Like OS.
 
 # Installation
 
