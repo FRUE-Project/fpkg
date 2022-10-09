@@ -31,7 +31,7 @@ else
 fi
 #install function
 
-function fpkginstall {
+function fpkginstall() {
 		 echo "!! K then, we gon download some shit."       
                         cd /tmp/fpkg-dl 
                         wget -t=10 https://raw.githubusercontent.com/FRUE-Project/fpkg/main/fpkg >/dev/null 2>&1 || exit_with_error "Couldn't download FPKG, try again some other time."                               
@@ -48,7 +48,7 @@ or !! Couldn't move files."
 
 #don't install function
 
-function noinst {
+function noinst() {
 		echo "!! K then, ain't gonna install, don't know why you ran this but ok. Exitin'."
 		exit 1
 }
