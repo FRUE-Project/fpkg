@@ -12,11 +12,27 @@ The tool of creating packages for FPKG
 }
 
 function Init() {
+	# Create the metadata file
 	touch fpkg-meta
 	echo -e "name=placeholder_name
 maintainer=your-name
 is_official=true
 version=0.0.0" > fpkg-meta
+	
+	# Create the install.sh file
+	touch install.sh
+	echo -e "#!/usr/bin/env bash
+echo template" > install.sh
+
+	# Create the remove.sh file
+	touch remove.sh
+	echo -e "#!/usr/bin/env bash
+echo template" > remove.sh
+
+}
+
+function Build() {
+
 }
 
 optlist='hib'
