@@ -32,7 +32,7 @@ echo template" > remove.sh
 }
 
 function Build() {
-
+	echo "Sorry, not implemented yet ;P"
 }
 
 optlist='hib'
