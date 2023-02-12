@@ -8,6 +8,8 @@ The tool of creating packages for FPKG
  -h Show this help text.
  -i Initialise the current folder as a FPKG package.
  -b Build the current folder into a .fpkg file.
+
+© FRUE Project 2021 - 2023 No rights reserved.
 "
 }
 
