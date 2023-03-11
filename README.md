@@ -1,6 +1,7 @@
 # FPKG
-FPKG is a package manager for managing packages distrubted by us, the FRUE Project
-For more detailed information, see our [Wiki page](https://github.com/FRUE-Wiki/fpkg-quickstart)
+#### FPKG is a package manager for managing packages distrubted by us, the FRUE Project
+
+##### For more detailed information, see our [Wiki page](https://github.com/FRUE-Wiki/fpkg-quickstart)
 # Usage
 Currently, FPKG is being developed, but usage would most likely be like this:
 - **-i** - installs the given package
